@@ -1,13 +1,17 @@
 #!/usr/bin/env python3.6
 
 from tkinter import *
+import tkinter.messagebox
+import sys
+from random import randint as rand
 from simplecrypt import encrypt, decrypt
 from ast import literal_eval
- 
+
  
 class login_popupWindow(object):
     def __init__(self, master):
         top=self.top = Toplevel(master)
+        top.title('Log In')
         self.l1 = Label(top, text = 'User: ')
         self.l1.pack()
         self.e1 = Entry(top)
@@ -31,6 +35,7 @@ class login_popupWindow(object):
 class new_user_popupWindow(object):
     def __init__(self, master):
         top = self.top = Toplevel(master)
+        top.title('Create New User')
         self.l1 = Label(top, text = 'Fill below info to create new user and initial entry: ')
         self.l1.pack()
         self.l2 = Label(top, text = 'New User: ')
@@ -57,18 +62,48 @@ class new_user_popupWindow(object):
         self.e6.pack()
         self.l7 = Label(top, text = 'Website password: ')
         self.l7.pack()
-        self.e7 = Entry(top, show = '*')
+        self.generate_value = StringVar()
+        self.e7 = Entry(top, textvariable = self.generate_value)
         self.e7.pack()
+        self.gap4 = Label(top)
+        self.gap4.pack()
+        self.cb_var1 = IntVar()
+        self.cb_var1.set(0)
+        self.cb1 = Checkbutton(top, variable = self.cb_var1)
+        self.cb1.pack()
+        self.l9 = Label(top, text = 'Generate random password instead')
+        self.l9.pack()
+        self.l10 = Label(top, text = 'Enter the number of characters for random password')
+        self.l10.pack()
+        self.e10 = Entry(top)
+        self.e10.pack()
+        self.generate_button = Button(top, text = 'Generate Password', command = self.make_pw)
+        self.generate_button.pack()
+        self.gap1 = Label(top)
+        self.gap1.pack()
         self.cb_var1 = IntVar()
         self.cb_var1.set(0)
         self.gap2 = Label(top)
         self.gap2.pack()
-        self.cb1 = Checkbutton(top, text = 'Would you like to sign in as new user after creation?', variable = self.cb_var1)
+        self.cb1 = Checkbutton(top, variable = self.cb_var1)
         self.cb1.pack()
+        self.l8 = Label(top, text = 'Would you like to sign in as new user after creation?')
+        self.l8.pack()
         self.gap3 = Label(top)
         self.gap3.pack()
         self.make_button = Button(top, text = 'Create User', command = self.new_user_maker)
-        self.make_button.pack()
+        self.make_button.pack(fill = X)
+        self.no_make = Button(top, text = 'Cancel', command = self.cleanup)
+        self.no_make.pack(fill = X)
+    def rand_amount(self):
+        amount = int(self.e10.get())
+        return amount
+    def make_pw(self):
+        w_pw = ''
+        n = new_user_popupWindow.rand_amount(self)
+        for x in range(n):
+            w_pw += chr(rand(33,126))
+        self.generate_value.set(w_pw)
     def cleanup(self):
         self.top.destroy()
     def new_user_maker(self):
@@ -118,15 +153,18 @@ class new_user_popupWindow(object):
         if self.cb_var1.get() == 1:
             make_new_user_data(self)
             populate_new_user_listbox(self)
+            self.value1 = get_user(self)
+            self.value2 = get_pw(self)
             new_user_popupWindow.cleanup(self)
+            m.new_user_login()
+            m.new_user_login_pw()
         else:
             new_user_popupWindow.cleanup(self)
-
-        
 
 class new_entry_popupWindow(object):
     def __init__(self, master):
         top = self.top = Toplevel(master)
+        top.title('Add New Entry')
         self.l1 = Label(top, text = 'Website: ')
         self.l1.pack()
         self.e1 = Entry(top)
@@ -137,12 +175,47 @@ class new_entry_popupWindow(object):
         self.e2.pack()
         self.l3 = Label(top, text = 'Website password: ')
         self.l3.pack()
-        self.e3 = Entry(top, show = '*')
+        self.generate_value = StringVar()
+        self.e3 = Entry(top, textvariable = self.generate_value)
         self.e3.pack()
+        self.gap3 = Label(top)
+        self.gap3.pack()
+        self.cb_var1 = IntVar()
+        self.cb_var1.set(0)
+        self.cb1 = Checkbutton(top, variable = self.cb_var1)
+        self.cb1.pack()
+        self.l5 = Label(top, text = 'Generate random password instead')
+        self.l5.pack()
+        self.l6 = Label(top, text = 'Enter the number of characters for random password')
+        self.l6.pack()
+        self.e6 = Entry(top)
+        self.e6.pack()
+        self.generate_button = Button(top, text = 'Generate Password', command = self.make_pw)
+        self.generate_button.pack()
         self.gap1 = Label(top)
         self.gap1.pack()
+        self.l4 = Label(top, text = 'Enter User Password:')
+        self.l4.pack()
+        self.e4 = Entry(top, show = '*')
+        self.e4.pack()
+        self.gap2 = Label(top)
+        self.gap2.pack()
         self.new_entry_button = Button(top, text = 'Add Entry', command = self.new_entry_maker)
-        self.new_entry_button.pack()
+        self.new_entry_button.pack(fill = X)
+        self.no_new_button = Button(top, text = 'Cancel', command = self.cleanup)
+        self.no_new_button.pack(fill = X)
+    def rand_amount(self):
+        amount = int(self.e6.get())
+        return amount
+    def make_pw(self):
+        w_pw = ''
+        n = new_entry_popupWindow.rand_amount(self)
+        for x in range(n):
+            w_pw += chr(rand(33,126))
+        self.generate_value.set(w_pw)
+    def check_pw(self):
+        user_pw = self.e4.get()
+        return user_pw
     def cleanup(self):
         self.top.destroy()
     def get_w(self):
@@ -152,51 +225,178 @@ class new_entry_popupWindow(object):
         w_user = self.e2.get()
         return w_user
     def get_w_pw(self):
-        w_pw = self.e3.get()
-        return w_pw
+        if self.cb_var1.get() == 0:
+            w_pw = self.e3.get()
+            return w_pw
     def new_entry_maker(self):
-        dict05 = m.make_user_data()
-        dict05[self.get_w()] = {self.get_w_user():self.get_w_pw()}
-        make_save = str(dict05).encode('utf8')
-        savecipher = encrypt(m.main_pw_get(), make_save)
-        user_file = open(m.main_get_user() + '.txt', 'wb')
-        user_file.write(savecipher)
-        user_file.close()
-        new_entry_popupWindow.cleanup(self)
-        m.listbox.delete(0, END)
-        m.populate_listbox()
+        if new_entry_popupWindow.check_pw(self) == m.get_pw():
+            dict05 = m.make_user_data()
+            dict05[self.get_w()] = {self.get_w_user():self.get_w_pw()}
+            make_save = str(dict05).encode('utf8')
+            savecipher = encrypt(m.main_pw_get(), make_save)
+            user_file = open(m.main_get_user() + '.txt', 'wb')
+            user_file.write(savecipher)
+            user_file.close()
+            new_entry_popupWindow.cleanup(self)
+            m.listbox.delete(0, END)
+            m.populate_listbox()
+        else:
+            self.message = 'Wrong Password'
+            tkinter.messagebox.showinfo('Error', self.message)
+            new_entry_popupWindow.cleanup(self)            
+
+class edit_entry_popupWindow(object):
+    def __init__(self, master):
+        top = self.top = Toplevel(master)
+        top.title('Edit Entry')
+        self.l1 = Label(top, text = 'Edit information below:')
+        self.l1.pack()
+        get_selection04 = m.listbox_selection()
+        self.gap1 = Label(top)
+        self.gap1.pack()
+        self.l2 = Label(top, text = 'Website:')
+        self.l2.pack()
+        self.e2 = Entry(top)
+        self.e2.pack()
+        self.e2.insert(0, get_selection04)
+        self.l3 = Label (top, text = 'User:')
+        self.l3.pack()
+        self.e3 = Entry(top)
+        self.e3.pack()
+        self.e3.insert(0, self.user_display())
+        self.l4 = Label(top, text = 'Password:')
+        self.l4.pack()
+        self.generate_value = StringVar()
+        self.e4 = Entry(top, textvariable = self.generate_value)
+        self.e4.pack()
+        self.generate_value.set(self.pw_display())
+        self.gap4 = Label(top)
+        self.gap4.pack()
+        self.cb_var1 = IntVar()
+        self.cb_var1.set(0)
+        self.cb1 = Checkbutton(top, variable = self.cb_var1)
+        self.cb1.pack()
+        self.l9 = Label(top, text = 'Generate random password instead')
+        self.l9.pack()
+        self.l10 = Label(top, text = 'Enter the number of characters for random password')
+        self.l10.pack()
+        self.e10 = Entry(top)
+        self.e10.pack()
+        self.generate_button = Button(top, text = 'Generate Password', command = self.make_pw)
+        self.generate_button.pack()
+        self.gap2 = Label(top)
+        self.gap2.pack()
+        self.l5 = Label(top, text = 'Enter user password:')
+        self.l5.pack()
+        self.e5 = Entry(top, show = '*')
+        self.e5.pack()
+        self.gap3 = Label(top)
+        self.gap3.pack()
+        self.make_edit_button = Button(top, text = 'Edit', command = self.make_edit)
+        self.make_edit_button.pack(fill = X)
+        self.no_edit = Button(top, text = 'Cancel', command = self.cleanup)
+        self.no_edit.pack(fill = X)
+    def rand_amount(self):
+        amount = int(self.e10.get())
+        return amount
+    def make_pw(self):
+        w_pw = ''
+        n = edit_entry_popupWindow.rand_amount(self)
+        for x in range(n):
+            w_pw += chr(rand(33,126))
+        self.generate_value.set(w_pw)
+    def user_display(self):
+        dict09 = m.make_user_data()
+        get_selector05 = m.listbox_selection()
+        parse_user = dict09[get_selector05]
+        uname_list = []
+        for key in parse_user.keys():
+            uname_list.append(key)
+        return uname_list[0]
+    def pw_display(self):
+        dict10 = m.make_user_data()
+        get_selector06 = m.listbox_selection()
+        parse_pw = dict10[get_selector06]
+        pw_list = []
+        for value in parse_pw.values():
+            pw_list.append(value)
+        return pw_list[0]
+    def check_pw(self):
+        user_pw = self.e5.get()
+        return user_pw
+    def cleanup(self):
+        self.top.destroy()
+    def make_edit(self):
+        if edit_entry_popupWindow.check_pw(self) == m.get_pw():
+            dict11 = m.make_user_data()
+            get_selector07 = m.listbox_selection()
+            dict11.pop(get_selector07, 'Entry not found')
+            dict11[self.e2.get()] = {self.e3.get():self.e4.get()}
+            make_save = str(dict11).encode('utf8')
+            savecipher = encrypt(m.main_pw_get(), make_save)
+            user_file = open(m.main_get_user() + '.txt', 'wb')
+            user_file.write(savecipher)
+            user_file.close()
+            edit_entry_popupWindow.cleanup(self)
+            m.listbox.delete(0, END)
+            m.populate_listbox()
+        else:
+            self.message = 'Wrong Password'
+            tkinter.messagebox.showinfo('Error', self.message)
+            edit_entry_popupWindow.cleanup(self)
 
 class remove_entry_popupWindow(object):
     def __init__(self, master):
         top = self.top = Toplevel(master)
-        self.l1 = Label(top, text = 'Which entry would you like to remove?')
+        top.title('Remove Entry')
+        self.l1 = Label(top, text = 'Are you sure you would like to remove this entry?')
         self.l1.pack()
-        self.e1 = Entry(top)
-        self.e1.pack()
         self.gap1 = Label(top)
         self.gap1.pack()
+        get_selection03 = m.listbox_selection()
+        self.l2 = Label(top, text = get_selection03)
+        self.l2.pack()
+        self.gap2 = Label(top)
+        self.gap2.pack()
+        self.l3 = Label(top, text = 'Enter user password:')
+        self.l3.pack()
+        self.e1 = Entry(top, show = '*')
+        self.e1.pack()
+        self.gap3 = Label(top)
+        self.gap3.pack()
         self.remove_entry_button = Button(top, text = 'Remove', command = self.remover)
-        self.remove_entry_button.pack()
+        self.remove_entry_button.pack(fill = X)
+        self.no_remove_button = Button(top, text = 'Cancel', command = self.cleanup)
+        self.no_remove_button.pack(fill = X)
     def cleanup(self):
         self.top.destroy()
     def get_ws(self):
-        ws = self.e1.get()
+        ws = m.listbox_selection()
         return ws
+    def check_pw(self):
+        user_pw = self.e1.get()
+        return user_pw
     def remover(self):
-        dict08 = m.make_user_data()
-        dict08.pop(self.get_ws(), 'Entry not found')
-        make_save = str(dict08).encode('utf8')
-        savecipher = encrypt(m.main_pw_get(), make_save)
-        user_file = open(m.main_get_user() + '.txt', 'wb')
-        user_file.write(savecipher)
-        user_file.close()
-        remove_entry_popupWindow.cleanup(self)
-        m.listbox.delete(0, END)
-        m.populate_listbox()
+        if remove_entry_popupWindow.check_pw(self) == m.get_pw():
+            dict08 = m.make_user_data()
+            dict08.pop(self.get_ws(), 'Entry not found')
+            make_save = str(dict08).encode('utf8')
+            savecipher = encrypt(m.main_pw_get(), make_save)
+            user_file = open(m.main_get_user() + '.txt', 'wb')
+            user_file.write(savecipher)
+            user_file.close()
+            remove_entry_popupWindow.cleanup(self)
+            m.listbox.delete(0, END)
+            m.populate_listbox()
+        else:
+            self.message = 'Wrong Password'
+            tkinter.messagebox.showinfo('Error', self.message)
+            remove_entry_popupWindow.cleanup(self)
         
 class mainWindow(object):
     def __init__(self, master):
         self.master = master
+        master.title('EZ\'s PySafe')
         info_label = self.bottomF = Frame(master)
         user_info = self.user_infoF = Frame(info_label)
         pw_info = self.pw_infoF = Frame(info_label)
@@ -206,16 +406,20 @@ class mainWindow(object):
         self.b.pack(fill = X, anchor = N)
         self.new_user = Button(rightF, text = 'Create New User', command = self.new_user_popup)
         self.new_user.pack(fill = X, anchor = N)
-        self.add_entry = Button(rightF, text = 'Add New Entry', command = self.new_entry_popup)
+        self.add_entry = Button(rightF, text = 'Add Entry', command = self.new_entry_popup)
         self.add_entry.pack(fill = X, anchor = N)
+        self.edit_entry = Button(rightF, text = 'Edit Entry', command = self.edit_entry_popup)
+        self.edit_entry.pack(fill = X, anchor = N)
         self.remove_entry = Button(rightF, text = 'Remove Entry', command = self.remove_entry_popup)
         self.remove_entry.pack(fill = X, anchor = N)
-        self.b2 = Button(rightF, text = 'View Info', command = self.select_button)
-        self.b2.pack(fill = X, anchor = N)
         self.quit_button = Button(rightF, text = 'Quit', command = self.master.destroy)
         self.quit_button.pack(fill = X)
         self.listbox = Listbox(leftF)
-        self.listbox.pack()
+        self.listbox.pack(fill = BOTH, expand = 1)
+        self.gap1 = Label(leftF)
+        self.gap1.pack()
+        self.b2 = Button(leftF, text = 'View Info', command = self.select_button)
+        self.b2.pack(fill = X, anchor = N)
         self.user_title = Label(user_info, text = 'User:')
         self.user_title.pack(side = 'left')
         self.user_value = StringVar()
@@ -244,7 +448,10 @@ class mainWindow(object):
         key_list = []
         dict01 = m.make_user_data()
         for key in dict01.keys():
-            m.listbox.insert('end', key)
+            key_list.append(key)
+        key_list.sort(key = str.lower)
+        for item in key_list:
+            m.listbox.insert('end', item)
     def listbox_selection(self):
         selection_list01 = []
         dict02 = m.make_user_data()
@@ -293,6 +500,10 @@ class mainWindow(object):
         self.b["state"] = "disabled"
         self.master.wait_window(self.x.top)
         self.b["state"] = "normal"
+    def new_user_login(self):
+        self.w.value1.set(self.x.value1)
+    def new_user_login_pw(self):
+        self.w.value2.set(self.x.value2)
     def new_entry_popup(self):
         self.y = new_entry_popupWindow(self.master)
         self.b["state"] = "disabled"
@@ -303,8 +514,15 @@ class mainWindow(object):
         self.b["state"] = "disabled"
         self.master.wait_window(self.z.top)
         self.b["state"] = "normal"
+    def edit_entry_popup(self):
+        self.zz = edit_entry_popupWindow(self.master)
+        self.b["state"] = "disabled"
+        self.master.wait_window(self.zz.top)
+        self.b["state"] = "normal"
  
 if __name__ == "__main__":
-    root = Tk()
-    m = mainWindow(root)
-    root.mainloop()
+        root = Tk()
+        m = mainWindow(root)
+        root.mainloop()
+
+    
