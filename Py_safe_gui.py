@@ -2,7 +2,6 @@
 
 from tkinter import *
 import tkinter.messagebox
-import sys
 from random import randint as rand
 from simplecrypt import encrypt, decrypt
 from ast import literal_eval
@@ -42,6 +41,7 @@ class new_user_popupWindow(object):
         self.l2.pack()
         self.e2 = Entry(top)
         self.e2.pack()
+        self.value1 = StringVar
         self.gap0 = Label(top)
         self.gap0.pack()
         self.l3 = Label(top, text = 'The user password is non-retrievable, \n Please write down and store safely')
@@ -50,6 +50,7 @@ class new_user_popupWindow(object):
         self.l4.pack()
         self.e4 = Entry(top, show = '*')
         self.e4.pack()
+        self.value2 = StringVar
         self.gap1 = Label(top)
         self.gap1.pack()
         self.l5 = Label(top, text = 'Website: ')
@@ -145,7 +146,6 @@ class new_user_popupWindow(object):
             user_data = literal_eval(loader)
             return user_data
         def populate_new_user_listbox(self):
-            key_list = []
             dict07 = make_new_user_data(self)
             for key in dict07.keys():
                 m.listbox.insert('end', key)
@@ -153,8 +153,8 @@ class new_user_popupWindow(object):
         if self.cb_var1.get() == 1:
             make_new_user_data(self)
             populate_new_user_listbox(self)
-            self.value1 = get_user(self)
-            self.value2 = get_pw(self)
+            self.value1 = self.e2.get()
+            self.value2 = self.e4.get()
             new_user_popupWindow.cleanup(self)
             m.new_user_login()
             m.new_user_login_pw()
@@ -406,6 +406,8 @@ class mainWindow(object):
         self.b.pack(fill = X, anchor = N)
         self.new_user = Button(rightF, text = 'Create New User', command = self.new_user_popup)
         self.new_user.pack(fill = X, anchor = N)
+        self.new_user_value = StringVar
+        self.new_user_pw_value = StringVar
         self.add_entry = Button(rightF, text = 'Add Entry', command = self.new_entry_popup)
         self.add_entry.pack(fill = X, anchor = N)
         self.edit_entry = Button(rightF, text = 'Edit Entry', command = self.edit_entry_popup)
@@ -485,10 +487,10 @@ class mainWindow(object):
         self.b["state"] = "disabled"
         self.master.wait_window(self.w.top)
         self.b["state"] = "normal"
-    def get_user(self):
-        return self.w.value1
-    def get_pw(self):
-        return self.w.value2
+    def reg_user_login(self):
+        self.new_user_value = self.w.value1
+    def reg_user_login_pw(self):
+        self.new_user_pw_value = self.w.value2
     def main_get_user(self):
         main_user_value = m.get_user()
         return main_user_value
@@ -501,9 +503,13 @@ class mainWindow(object):
         self.master.wait_window(self.x.top)
         self.b["state"] = "normal"
     def new_user_login(self):
-        self.w.value1.set(self.x.value1)
+        self.new_user_value = self.x.value1
     def new_user_login_pw(self):
-        self.w.value2.set(self.x.value2)
+        self.new_user_pw_value = self.x.value2
+    def get_user(self):
+        return self.new_user_value
+    def get_pw(self):
+        return self.new_user_pw_value
     def new_entry_popup(self):
         self.y = new_entry_popupWindow(self.master)
         self.b["state"] = "disabled"
